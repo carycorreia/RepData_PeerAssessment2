@@ -11,12 +11,14 @@
 setwd('/Users/carycorreia/Documents/Exploratory_Data_Project1/RepData_PeerAssessment2')
 ##      Read in the dataset
 data<-read.table('repdata-data-StormData.csv.bz2', header=TRUE, sep=",")
+nrow(data)
 
 ##      Data Processing
 ## EVTYPE has a lot of data issues:
 
 ## let's make our lives easier and get rid of noise-> subset all rows that have 0 for injuring, deaths, and property damage
 data<-data[!(data$FATALITIES==0 & data$INJURIES==0 & data$PROPDMG==0 & data$CROPDMG==0),]
+nrows(data)
 ##              
 ##  Get unique list of EVTYPEs then duplicate the header--these steps are necessary because i dont want to alter the orig col
 evt<-as.data.frame(unique(data$EVTYPE))
@@ -120,19 +122,18 @@ data$prop.cost<-ifelse(!is.na(data$PROPDMG),
                                      ifelse(data$PROPDMG=='B', data$PROPDMG*1000000000, 0))))
 
 ## Lets' build the aggregated data so we can take a look at the Y measures by the EVTYPE and Period 
-
-fatal.agg<-as.data.frame(tapply(data$FATALITIES, list(evtype=data$recode, period=data$period2), sum))  ## Fatalities summarized
-EF.kill<-rownames(fatal.agg); fatal.agg$EVTYPE<-EF.kill
-
-injuries.agg<-as.data.frame(tapply(data$INJURIES, list(evtype=data$recode, period=data$period2), sum)) ## Injuries   summarized
-EF.injuries<-rownames(injuries.agg); injuries.agg$EVTYPE<-EF.injuries
-
-crop.agg<-as.data.frame(tapply(data$crop.cost, list(evtype=data$recode, period=data$period2), sum))    ## crop costs summarized
-EF.crops<-rownames(crop.agg); crop.agg$EVTYPE<-EF.crops
-
-prop.agg<-as.data.frame(tapply(data$prop.cost, list(evtype=data$recode, period=data$period2), sum))    ## prop.costs summarized
-EF.props<-rownames(prop.agg); prop.agg$EVTYPE<-EF.props
-
+## Fatalities summarized
+        fatal.agg<-as.data.frame(tapply(data$FATALITIES, list(evtype=data$recode, period=data$period2), sum))  
+        EF.kill<-rownames(fatal.agg); fatal.agg$EVTYPE<-EF.kill
+## Injuries   summarized
+        injuries.agg<-as.data.frame(tapply(data$INJURIES, list(evtype=data$recode, period=data$period2), sum))
+        EF.injuries<-rownames(injuries.agg); injuries.agg$EVTYPE<-EF.injuries
+## crop costs summarized
+        crop.agg<-as.data.frame(tapply(data$crop.cost, list(evtype=data$recode, period=data$period2), sum))   
+        EF.crops<-rownames(crop.agg); crop.agg$EVTYPE<-EF.crops
+## prop.costs summarized
+        prop.agg<-as.data.frame(tapply(data$prop.cost, list(evtype=data$recode, period=data$period2), sum))    
+        EF.props<-rownames(prop.agg); prop.agg$EVTYPE<-EF.props
 
 # let's reshape the data to fit this into 1 table
 library(reshape)
